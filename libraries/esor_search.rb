@@ -1,49 +1,18 @@
 module Esor
-  attr_accessor :instances
 
-  def ec2
-    require 'aws-sdk'
+  # attr_accessor :instances
+  include Esor::Amazon
 
-    Aws.config.update({
-      region: node['ec2']['placement_availability_zone'].chop,
-      credentials: Aws::SharedCredentials.new(
-        region: node['ec2']['placement_availability_zone'].chop
-      )
-    })
-
-    Chef::Log.debug('Initializing the EC2 Client')
-    @ec2 ||= Aws::EC2::Client.new
+  def esor_source
+    aws if node['esor']['source'] == aws
   end
 
-  def esor_results(tag_key=node['esor']['aws_tag_key'],tag_value=node['esor']['aws_tag_value'])
-
-    ec2
-
-    resp = ec2.describe_instances({
-      dry_run: false,
-      filters: [
-        {
-          name: "tag:#{tag_key}",
-          values: [tag_value],
-        },
-      ],
-    })
-
-    node.run_state['esor'] = {}
-    resp[:reservations].each do |reservation|
-      reservation[:instances].each do |instance|
-        tags = {}
-        instance[:tags].each do | tag |
-          tags[tag[:key]] = tag[:value]
-        end
-        node.run_state['esor'][instance[:instance_id]] = tags
-      end
-    end
-    return node.run_state['esor']
+  def esor_run_state
+    node.run_state['esor'] = esor_source
   end
 
   def esor_search(tag_name,tag_value)
-    esor_results unless node.run_state['esor']
+    esor_run_state unless node.run_state['esor']
 
     results = []
     node.run_state['esor'].each do | instance,tags |

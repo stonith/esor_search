@@ -23,8 +23,3 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-
-chef_gem 'aws-sdk' do
-  version node['aws']['aws_sdk_version']
-  action :install
-end

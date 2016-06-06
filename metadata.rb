@@ -5,5 +5,3 @@ license 'mit'
 description 'Installs/Configures esor_search'
 long_description 'Installs/Configures esor_search'
 version '0.1.0'
-
-# depends 'aws'
