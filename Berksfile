@@ -2,4 +2,4 @@ source 'https://supermarket.chef.io'
 
 metadata
 
-# cookbook 'aws'
+cookbook 'esor_search_test', path: 'test/fixtures/cookbooks/esor_search_test'

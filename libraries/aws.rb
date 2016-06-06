@@ -17,7 +17,7 @@ module Esor
 
       require 'aws-sdk'
     end
-
+    
     def ec2
       require_aws_sdk
       Aws.config.update({
@@ -43,8 +43,12 @@ module Esor
         filters: [
           {
             name: "tag:#{tag_key}",
-            values: [tag_value],
+            values: [tag_value]
           },
+          {
+            name: "instance-state-name",
+            values: ["running"]
+          }
         ],
       })
 

@@ -33,6 +33,14 @@ esor_search('Name','app')
 
 The above example will return all instance id's for which the tag key of "Name" has a tag value that contains "app".
 
+A `return_tag` can also be specified if you want a list of a specific tag returned:
+
+```ruby
+esor_search('Name','app','Name')
+```
+
+The above examples will return the value of the 'Name' tag as an array.
+
 ### Sources
 
 ##### AWS

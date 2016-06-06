@@ -16,8 +16,7 @@ platforms:
 suites:
   - name: default
     run_list:
-      # - recipe[aws::default]
-      - recipe[esor_search::default]
+      - recipe[esor_search_test::default]
     attributes:
       ec2:
         placement_availability_zone: us-west-1b
