@@ -17,14 +17,11 @@ module Esor
 
       require 'aws-sdk'
     end
-    
+
     def ec2
       require_aws_sdk
       Aws.config.update({
-        region: node['ec2']['placement_availability_zone'].chop,
-        credentials: Aws::SharedCredentials.new(
-          region: node['ec2']['placement_availability_zone'].chop
-        )
+        region: node['ec2']['placement_availability_zone'].chop
       })
 
       Chef::Log.debug('Initializing the EC2 Client')

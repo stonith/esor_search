@@ -22,6 +22,7 @@ module Esor
 
     results = []
     node.run_state['esor'].each do | instance,tags |
+      next unless tags[tag_name]
       if return_tag
         results << tags[return_tag] if tags[tag_name].match(tag_value)
       else
