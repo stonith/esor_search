@@ -44,7 +44,8 @@ The above examples will return the value of the 'Name' tag as an array.
 ### Sources
 
 ##### AWS
-The AWS source uses the ruby aws-sdk gem and assumes that a .aws/credentials file exists and follows the SharedCredentials syntax. The easiest way to implement this however is to use AWS IAM Instance Roles with an attached policy with the describe_instances read permission.
+The AWS source uses the ruby aws-sdk gem and assumes that a .aws/credentials file exists and follows the SharedCredentials syntax. The easiest way to implement this however is to use AWS IAM Instance Roles with an attached policy with the `ec2:DescribeInstances` IAM permission.
+NOTE: `private_dns_name` is not an AWS tag but has been added as a return_tag
 
 ##### TODO
 * add more sources like GCE, Zookeeper, Consul, etc
