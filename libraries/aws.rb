@@ -54,6 +54,7 @@ module Esor
         reservation[:instances].each do |instance|
           tags = {}
           tags['private_dns_name'] = instance[:private_dns_name]
+          tags['availability_zone'] = instance['placement']['availability_zone']
           instance[:tags].each do | tag |
             tags[tag[:key]] = tag[:value]
           end
