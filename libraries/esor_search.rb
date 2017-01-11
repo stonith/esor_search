@@ -1,6 +1,10 @@
+require_relative './aws'
+require_relative './gcloud'
+
 module Esor
 
   include Esor::Amazon
+  include Esor::Gcloud
 
   def esor_source
     case node['esor']['source']

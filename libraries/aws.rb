@@ -56,7 +56,7 @@ module Esor
           tags['private_dns_name'] = instance[:private_dns_name]
           tags['availability_zone'] = instance['placement']['availability_zone']
           instance[:tags].each do | tag |
-            tags[tag[:key]] = tag[:value]
+            tags[tag[:key].downcase] = tag[:value]
           end
           instances[instance[:instance_id]] = tags
         end
