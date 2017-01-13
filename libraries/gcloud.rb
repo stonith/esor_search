@@ -1,37 +1,25 @@
 module Esor
-  module Gcloud
-
-    def require_gcloud_sdk
-      # require the version of the aws-sdk specified in the node attribute
-      gem 'google-api-client', node['gcloud']['gcloud_sdk_version']
-      require 'google-api-client'
-      Chef::Log.debug("Node had google-api-client #{node['gcloud']['gcloud_sdk_version']} installed. No need to install gem.")
-    rescue LoadError
-      Chef::Log.debug("Did not find google-api-client version #{node['gcloud']['gcloud_sdk_version']} installed. Installing now")
-
-      chef_gem 'google-api-client' do
-        version node['gcloud']['gcloud_sdk_version']
-        compile_time true if Chef::Resource::ChefGem.method_defined?(:compile_time)
-        action :install
-      end
-
+  class Gcloud
+    attr_reader :node
+    def initialize(obj)
       require 'googleauth'
       require 'google/apis/compute_v1'
+      @node = obj
     end
 
     def gce
-      require_gcloud_sdk
-      Chef::Log.debug('Initializing the Google API Client')
-      @gce ||= Google::Apis::ComputeV1::ComputeService.new
-      scopes =  ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/compute']
-      @gce.authorization ||= Google::Auth.get_application_default(scopes)
+      @gce ||= begin
+        Chef::Log.debug('Initializing the Google API Client')
+        g = Google::Apis::ComputeV1::ComputeService.new
+        scopes =  ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/compute']
+        g.authorization ||= Google::Auth.get_application_default(scopes)
+        g
+      end
     end
 
-    def gcloud
+    def search
 
-      gce
-
-      resp = @gce.list_instances(
+      resp = gce.list_instances(
         node['gce']['project']['projectId'],
         node['gce']['instance']['zone'].split('/').last,
         fields: 'items(id,metadata/items,name,networkInterfaces/networkIP,status,zone)'

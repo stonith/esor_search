@@ -22,7 +22,7 @@ The following attributes are used:
 * `default['gcloud']['gcloud_sdk_version']` = Google API Client gem version
 * `default['esor']['tag_key']` - global search key
 * `default['esor']['tag_value']` - global search value
-* `default['esor']['source']` - source to use ie. aws, consul, etc
+* `default['esor']['source']` - source to use (currently supports `amazon` or `gcloud`)
 
 Usage
 -----

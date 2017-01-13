@@ -1,39 +1,22 @@
 module Esor
-  module Amazon
-
-    def require_aws_sdk
-      # require the version of the aws-sdk specified in the node attribute
-      gem 'aws-sdk', node['aws']['aws_sdk_version']
+  class Amazon
+    attr_reader :node
+    def initialize(obj)
       require 'aws-sdk'
-      Chef::Log.debug("Node had aws-sdk #{node['aws']['aws_sdk_version']} installed. No need to install gem.")
-    rescue LoadError
-      Chef::Log.debug("Did not find aws-sdk version #{node['aws']['aws_sdk_version']} installed. Installing now")
-
-      chef_gem 'aws-sdk' do
-        version node['aws']['aws_sdk_version']
-        compile_time true if Chef::Resource::ChefGem.method_defined?(:compile_time)
-        action :install
-      end
-
-      require 'aws-sdk'
+      @node = obj
     end
 
     def ec2
-      require_aws_sdk
-      Aws.config.update({
-        region: node['ec2']['placement_availability_zone'].chop
-      })
-
-      Chef::Log.debug('Initializing the EC2 Client')
-      @ec2 ||= Aws::EC2::Client.new
+      @ec2 ||= begin
+        Chef::Log.debug('Initializing the EC2 Client')
+        Aws.config.update({region: node['ec2']['placement_availability_zone'].chop})
+        Aws::EC2::Client.new
+      end
     end
 
-    def aws(
-      tag_key=node['esor']['tag_key'],
-      tag_value=node['esor']['tag_value']
-      )
-
-      ec2
+    def search(tag_key=nil,tag_value=nil)
+      tag_key = node['esor']['tag_key']
+      tag_value = node['esor']['tag_value']
 
       resp = ec2.describe_instances({
         dry_run: false,
@@ -55,7 +38,7 @@ module Esor
           tags = {}
           tags['private_dns_name'] = instance[:private_dns_name]
           tags['availability_zone'] = instance['placement']['availability_zone']
-          instance[:tags].each do | tag |
+          instance[:tags].each do |tag|
             tags[tag[:key].downcase] = tag[:value]
           end
           instances[instance[:instance_id]] = tags

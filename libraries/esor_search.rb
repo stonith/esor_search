@@ -1,20 +1,15 @@
-require_relative './aws'
-require_relative './gcloud'
+require_relative './install'
 
 module Esor
-
-  include Esor::Amazon
-  include Esor::Gcloud
-
+  include Esor::Install
   def esor_source
-    case node['esor']['source']
-    when 'aws'
-      aws
-    when 'gcloud'
-      gcloud
-    else
-      Chef::Application.fatal!("An ESOR source must be specified. Valid sources are 'aws' or 'gcloud'.", 82)
-    end
+    send(node['esor']['source'])
+    source = node['esor']['source'].dup
+    source[0] = source[0].capitalize
+    global = Esor.const_get(source).new(node)
+    global.search
+  rescue TypeError, NameError => e
+      Chef::Application.fatal!("#{e} An ESOR source must be specified. Valid sources are 'amazon' or 'gcloud'.", 82)
   end
 
   def esor_run_state
@@ -27,10 +22,10 @@ module Esor
     results = []
     node.run_state['esor'].each do | instance,tags |
       next unless tags[tag_name]
-      if return_tag
-        results << tags[return_tag] if tags[tag_name].match(tag_value)
-      else
-        results << instance if tags[tag_name].match(tag_value)
+      if return_tag && tags[tag_name].match(tag_value)
+        results << tags[return_tag]
+      elsif tags[tag_name].match(tag_value)
+        results << instance
       end
     end
     return results.sort

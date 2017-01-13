@@ -18,5 +18,13 @@ suites:
     run_list:
       - recipe[esor_search_test::default]
     attributes:
+      esor:
+        source: amazon
       ec2:
         placement_availability_zone: us-west-1b
+  - name: gcloud
+    run_list:
+      - recipe[esor_search_test::default]
+    attributes:
+      esor:
+        source: gcloud
